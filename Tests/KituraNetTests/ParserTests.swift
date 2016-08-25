@@ -55,7 +55,9 @@ class ParserTests: XCTestCase {
     func testParseUrlWithComplexQueryDictionary() {
         let urlString = "https://example.org/path/data?key=value&key1=10&" +
             "key2[sub]=0&key2[sub1]=true&" +
-            "key3[\"sub\"][sub1][\"sub2\"]=\"text\""
+            "emptyKey1=&" +
+            "key3[\"sub\"][sub1][\"sub2\"]=\"text\"&" +
+            "emptyKey2="
 
         let url = urlString.data(using: .utf8)!
 
@@ -81,13 +83,17 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(urlParser.queryParameters["key3", "sub", "sub1", "sub2"].string, "text", "Incorrect query")
 
         XCTAssertNil(urlParser.queryParameters["nonexisting"]["sub"]["sub1"]["sub2"].string, "Wrong nonexisting key")
+
+        XCTAssertEqual(urlParser.queryParameters.dictionary?.count, 4, "Incorrect query")
     }
 
     func testParseUrlWithComplexQueryArray() {
 
         let urlString = "https://example.org/path/data?" +
             "key[]=10&key[]=15&key[]=20&" +
-            "key1[][]=101&key1[][]=102&key1[]=103"
+            "emptyKey1=&" +
+            "key1[][]=101&key1[][]=102&key1[]=103&" +
+            "emptyKey2="
 
         let url = urlString.data(using: .utf8)!
 
@@ -108,15 +114,19 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(urlParser.queryParameters["key1"][1].int, 103, "Incorrect query")
 
         XCTAssertNil(urlParser.queryParameters["nonexisting"]["sub"]["sub1"]["sub2"].string, "Wrong nonexisting key")
+
+        XCTAssertEqual(urlParser.queryParameters.dictionary?.count, 2, "Incorrect query")
     }
 
     func testParseUrlWithComplexQueryArrayAndDictionary() {
 
         let urlString = "https://example.org/path/data?" +
             "key[sub][]=1&key[sub][]=2&key[sub][]=3&" +
+            "emptyKey1=&" +
             "key1[sub][][]=101&key1[sub][][]=102&" +
             "key2[][a]=text1&key2[][b]=text2&" +
-            "key3[][][a]=text1&key3[][][b]=text2"
+            "key3[][][a]=text1&key3[][][b]=text2&" +
+            "emptyKey2="
 
         let url = urlString.data(using: .utf8)!
 
@@ -145,6 +155,7 @@ class ParserTests: XCTestCase {
 
         XCTAssertNil(urlParser.queryParameters["nonexisting"]["sub"]["sub1"]["sub2"].string, "Wrong nonexisting key")
 
+        XCTAssertEqual(urlParser.queryParameters.dictionary?.count, 4, "Incorrect query")
     }
 
     func testParseUrlWithReplacing() {

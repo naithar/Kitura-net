@@ -24,7 +24,7 @@ public struct Query: CustomStringConvertible {
     typealias RegularExpressionType = NSRegularExpression
 #endif
 
-    static var keyedParameterRegex: RegularExpressionType? = {
+    static var indexedParameterRegex: RegularExpressionType? = {
         return try? RegularExpressionType(pattern: "([^\\[\\]\\,\\.\\s]*)\\[([^\\[\\]\\,\\.\\s]*)\\]", options: .caseInsensitive)
     }()
 
@@ -76,7 +76,7 @@ extension Query {
         }
         set {
             switch newValue {
-            case let string as String:
+            case let string as String where !string.isEmpty:
                 if let int = Int(string) {
                     self.type = .int(value: int)
                 } else if let double = Double(string) {
