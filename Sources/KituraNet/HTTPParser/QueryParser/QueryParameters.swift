@@ -28,10 +28,16 @@ public struct QueryParameters {
 
     public typealias AnyType = QueryParameter.AnyType
 
+#if os(Linux)
+    typealias RegularExpressionType = RegularExpression
+#else
+    typealias RegularExpressionType = NSRegularExpression
+#endif
+
     private var root = QueryParameter([:])
 
-    lazy var keyedParameterRegex: NSRegularExpression? = {
-        return try? NSRegularExpression(pattern: "([^\\[\\]\\,\\.\\s]*)\\[([^\\[\\]\\,\\.\\s]*)\\]", options: .caseInsensitive)
+    lazy var keyedParameterRegex: RegularExpressionType? = {
+        return try? RegularExpressionType(pattern: "([^\\[\\]\\,\\.\\s]*)\\[([^\\[\\]\\,\\.\\s]*)\\]", options: .caseInsensitive)
     }()
 
     public subscript(key: QueryKeyProtocol) -> QueryParameter {
