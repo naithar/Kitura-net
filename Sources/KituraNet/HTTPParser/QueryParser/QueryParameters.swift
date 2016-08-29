@@ -114,7 +114,7 @@ public struct QueryParameters {
     private mutating func parse(container: inout QueryParameter, key: String?, value: QueryParameter) {
         if let key = key,
             let regex = self.keyedParameterRegex,
-            let match = regex.firstMatch(in: key, range: NSMakeRange(0, key.characters.count)) { //checks for dictionary and array
+            let match = regex.firstMatch(in: key, options: [], range: NSMakeRange(0, key.characters.count)) { //checks for dictionary and array
                 let nsKey = NSString(string: key)
                 let matchRange = match.rangeAt(0)
 
