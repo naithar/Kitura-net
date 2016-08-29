@@ -25,7 +25,7 @@ extension Bool {
     }
 }
 
-extension QueryParameter {
+extension QueryParameter: ParameterValueProtocol {
 
     public var string: String? {
         switch self.type {
@@ -83,7 +83,7 @@ extension QueryParameter {
         }
     }
 
-    public var array: [AnyType]? {
+    public var array: [Any]? {
         switch self.type {
         case .array(let value):
             return value
@@ -92,7 +92,7 @@ extension QueryParameter {
         }
     }
 
-    public var dictionary: [String : AnyType]? {
+    public var dictionary: [String : Any]? {
         switch self.type {
         case .dictionary(let value):
             return value

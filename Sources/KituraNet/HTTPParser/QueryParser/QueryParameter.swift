@@ -18,12 +18,10 @@ import Foundation
 
 public struct QueryParameter {
 
-    public typealias AnyType = Any
-
     public enum ParameterType {
-        case null(object: AnyType)
-        case array(value: [AnyType])
-        case dictionary(value: [String : AnyType])
+        case null(object: Any)
+        case array(value: [Any])
+        case dictionary(value: [String : Any])
         case int(value: Int)
         case string(value: String)
         case double(value: Double)
@@ -32,7 +30,7 @@ public struct QueryParameter {
 
     fileprivate(set) public var type: ParameterType = .null(object: NSNull())
 
-    fileprivate(set) public var object: AnyType {
+    fileprivate(set) public var object: Any {
         get {
             switch self.type {
             case .string(let value):
@@ -69,9 +67,9 @@ public struct QueryParameter {
                 self.type = .double(value: double)
             case let bool as Bool:
                 self.type = .bool(value: bool)
-            case let array as [AnyType]:
+            case let array as [Any]:
                 self.type = .array(value: array)
-            case let dictionary as [String : AnyType]:
+            case let dictionary as [String : Any]:
                 self.type = .dictionary(value: dictionary)
             default:
                 self.type = .null(object: newValue)
@@ -81,7 +79,7 @@ public struct QueryParameter {
 
     fileprivate init() { }
 
-    public init(_ object: AnyType) {
+    public init(_ object: Any) {
         self.object = object
     }
 }

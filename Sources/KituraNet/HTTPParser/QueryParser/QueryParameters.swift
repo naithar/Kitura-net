@@ -26,15 +26,13 @@ extension String {
 
 public struct QueryParameters {
 
-    public typealias AnyType = QueryParameter.AnyType
-
 #if os(Linux)
     typealias RegularExpressionType = RegularExpression
 #else
     typealias RegularExpressionType = NSRegularExpression
 #endif
 
-    private var root = QueryParameter([:])
+    fileprivate var root = QueryParameter([:])
 
     lazy var keyedParameterRegex: RegularExpressionType? = {
         return try? RegularExpressionType(pattern: "([^\\[\\]\\,\\.\\s]*)\\[([^\\[\\]\\,\\.\\s]*)\\]", options: .caseInsensitive)
@@ -86,7 +84,7 @@ public struct QueryParameters {
         }
     }
 
-    private mutating func parse(container: inout QueryParameter, key: String, parameterKey: String, defaultValue: AnyType, value: QueryParameter, raw rawClosure: (QueryParameter) -> AnyType?) {
+    private mutating func parse(container: inout QueryParameter, key: String, parameterKey: String, defaultValue: Any, value: QueryParameter, raw rawClosure: (QueryParameter) -> Any?) {
         var newParameter: QueryParameter
 
         if let raw = rawClosure(container[parameterKey]) {
@@ -154,5 +152,32 @@ public struct QueryParameters {
                 container = value
             }
         }
+    }
+}
+
+extension QueryParameters: ParameterValueProtocol {
+
+    public var string: String? {
+        return self.root.string
+    }
+
+    public var int: Int? {
+        return self.root.int
+    }
+
+    public var double: Double? {
+        return self.root.double
+    }
+
+    public var bool: Bool? {
+        return self.root.bool
+    }
+
+    public var array: [Any]? {
+        return self.root.array
+    }
+
+    public var dictionary: [String : Any]? {
+        return self.root.dictionary
     }
 }
