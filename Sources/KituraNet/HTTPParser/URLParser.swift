@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright IBM Corporation 2016
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ */
 
 import KituraSys
 import CHTTPParser
@@ -67,7 +67,7 @@ public class URLParser : CustomStringConvertible {
     ///
     /// The query parameters brokenn out
     ///
-    public var queryParameters = QueryParameters()
+    internal(set) public var queryParameters = QueryParameters()
 
     ///
     /// Nicely formatted description of the parsed result
@@ -112,7 +112,7 @@ public class URLParser : CustomStringConvertible {
     public init (url: Data, isConnect: Bool) {
 
         var parsedURL = http_parser_url_url()
-        memset(&parsedURL, 0, sizeof(http_parser_url.self))
+        memset(&parsedURL, 0, MemoryLayout<http_parser_url>.size)
 
         let cIsConnect: Int32 = (isConnect ? 1 : 0)
         let returnCode = url.withUnsafeBytes() { (bytes: UnsafePointer<Int8>) -> Int32 in
@@ -134,12 +134,8 @@ public class URLParser : CustomStringConvertible {
             port = parsedURL.port
         }
 
-        self.parseQuery(query)
-    }
-
-    private func parseQuery(_ query: String?) {
         if let query = query {
-            queryParameters.parse(fromText: query)
+            self.queryParameters.parse(fromText: query)
         }
     }
 

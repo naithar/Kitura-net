@@ -14,19 +14,11 @@
  * limitations under the License.
  **/
 
- import Foundation
-
-extension Bool {
-
-    init?(_ string: String) {
-        guard string == "true" || string == "false" else { return nil }
-        self.init(string == "true")
-    }
-}
+import Foundation
 
 public struct QueryParameter {
 
-    public typealias AnyType = AnyObject
+    public typealias AnyType = Any
 
     public enum ParameterType {
         case null(object: AnyType)
@@ -38,9 +30,9 @@ public struct QueryParameter {
         case bool(value: Bool)
     }
 
-    private(set) public var type: ParameterType = .null(object: NSNull())
+    fileprivate(set) public var type: ParameterType = .null(object: NSNull())
 
-    public var object: AnyType {
+    fileprivate(set) public var object: AnyType {
         get {
             switch self.type {
             case .string(let value):
@@ -87,7 +79,7 @@ public struct QueryParameter {
         }
     }
 
-    private init() { }
+    fileprivate init() { }
 
     public init(_ object: AnyType) {
         self.object = object
@@ -130,7 +122,7 @@ extension QueryParameter {
         }
     }
 
-    subscript(keys: [QueryKeyProtocol]) -> QueryParameter {
+    public subscript(keys: [QueryKeyProtocol]) -> QueryParameter {
         get {
             return keys.reduce(self) { $0[$1] }
         }
@@ -145,82 +137,5 @@ extension QueryParameter {
 
 extension QueryParameter {
 
-    static let null = QueryParameter()
-}
-
-extension QueryParameter {
-
-    var string: String? {
-        switch self.type {
-        case .string(let value):
-            return value
-        case .int(let value):
-            return String(value)
-        case .double(let value):
-            return String(value)
-        case .bool(let value):
-            return String(value)
-        default:
-            return nil
-        }
-    }
-
-    var int: Int? {
-        switch self.type {
-        case .string(let value):
-            return Int(value)
-        case .int(let value):
-            return value
-        case .double(let value):
-            return Int(value)
-        case .bool(let value):
-            return Int(value)
-        default:
-            return nil
-        }
-    }
-
-    var double: Double? {
-        switch self.type {
-        case .string(let value):
-            return Double(value)
-        case .int(let value):
-            return Double(value)
-        case .double(let value):
-            return value
-        default:
-            return nil
-        }
-    }
-
-    var bool: Bool? {
-        switch self.type {
-        case .bool(let value):
-            return value
-        case .string(let value):
-            return Bool(value)
-        case .int(let value):
-            return Bool(value)
-        default:
-            return nil
-        }
-    }
-
-    var array: [AnyType]? {
-        switch self.type {
-        case .array(let value):
-            return value
-        default:
-            return nil
-        }
-    }
-
-    var dictionary: [String : AnyType]? {
-        switch self.type {
-        case .dictionary(let value):
-            return value
-        default:
-            return nil
-        }
-    }
+    public static let null = QueryParameter()
 }

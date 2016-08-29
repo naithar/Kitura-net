@@ -73,10 +73,9 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(urlParser.queryParameters["key2"]["sub"].int, 0, "Incorrect query")
         XCTAssertEqual(urlParser.queryParameters["key2", "sub"].string, "0", "Incorrect query")
 
-        //moving bool to dictionary turns bool to int
-        XCTAssertEqual(urlParser.queryParameters["key2"]["sub1"].string, "1", "Incorrect query")
+        XCTAssertEqual(urlParser.queryParameters["key2"]["sub1"].string, "true", "Incorrect query")
         XCTAssertEqual(urlParser.queryParameters["key2"]["sub1"].bool, true, "Incorrect query")
-        XCTAssertEqual(urlParser.queryParameters["key2", "sub1"].string, "1", "Incorrect query")
+        XCTAssertEqual(urlParser.queryParameters["key2", "sub1"].string, "true", "Incorrect query")
 
         XCTAssertEqual(urlParser.queryParameters["key3"]["sub"]["sub1"]["sub2"].string, "text", "Incorrect query")
         XCTAssertEqual(urlParser.queryParameters["key3", "sub", "sub1", "sub2"].string, "text", "Incorrect query")

@@ -14,7 +14,15 @@
  * limitations under the License.
  **/
 
- import Foundation
+import Foundation
+
+extension String {
+
+    fileprivate var parameter: String? {
+        let urlCharacterSet = CharacterSet(charactersIn: " \"\n")
+        return self.removingPercentEncoding?.trimmingCharacters(in: urlCharacterSet)
+    }
+}
 
 public struct QueryParameters {
 
@@ -24,10 +32,6 @@ public struct QueryParameters {
 
     lazy var keyedParameterRegex: NSRegularExpression? = {
         return try? NSRegularExpression(pattern: "([^\\[\\]\\,\\.\\s]*)\\[([^\\[\\]\\,\\.\\s]*)\\]", options: .caseInsensitive)
-    }()
-
-    lazy var urlCharacterSet: CharacterSet = {
-        return CharacterSet(charactersIn: " \"\n")
     }()
 
     public subscript(key: QueryKeyProtocol) -> QueryParameter {
@@ -48,15 +52,25 @@ public struct QueryParameters {
         }
     }
 
-    internal mutating func parse(fromText query: String) {
+    public init() { }
+
+    public init(from query: String?) {
+        guard let query = query else {
+            return
+        }
+
+        self.parse(fromText: query)
+    }
+
+    public mutating func parse(fromText query: String) {
         let pairs = query.components(separatedBy: "&")
 
         for pair in pairs {
             let pairArray = pair.components(separatedBy: "=")
 
             guard pairArray.count == 2,
-                let parameterValueString = pairArray[1].removingPercentEncoding?.trimmingCharacters(in: self.urlCharacterSet),
-                let key = pairArray[0].removingPercentEncoding?.trimmingCharacters(in: self.urlCharacterSet) else {
+                let parameterValueString = pairArray[1].parameter,
+                let key = pairArray[0].parameter else {
                     return
             }
 
@@ -95,22 +109,23 @@ public struct QueryParameters {
         if let key = key,
             let regex = self.keyedParameterRegex,
             let match = regex.firstMatch(in: key, range: NSMakeRange(0, key.characters.count)) { //checks for dictionary and array
+                let nsKey = NSString(string: key)
                 let matchRange = match.rangeAt(0)
 
                 let keyRange = match.rangeAt(1)
-                let parameterKey = key.bridge().substring(with: keyRange)
+                let parameterKey = nsKey.substring(with: keyRange)
 
                 let nextKeyRange = match.rangeAt(2)
-                var nextKeyPart = key.bridge().substring(with: nextKeyRange)
+                var nextKeyPart = nsKey.substring(with: nextKeyRange)
 
                 if nextKeyPart.characters.count > 0 {
-                    if let escaped = nextKeyPart.removingPercentEncoding?.trimmingCharacters(in: self.urlCharacterSet) {
+                    if let escaped = nextKeyPart.parameter {
                         nextKeyPart = escaped
                     }
-                    let nextKey = key.bridge().replacingCharacters(in: matchRange, with: nextKeyPart)
+                    let nextKey = nsKey.replacingCharacters(in: matchRange, with: nextKeyPart)
                     self.parse(container: &container, key: nextKey, parameterKey: parameterKey, defaultValue: [:], value: value) { $0.dictionary }
                 } else {
-                    let nextKey = key.bridge().replacingCharacters(in: matchRange, with: "")
+                    let nextKey = nsKey.replacingCharacters(in: matchRange, with: "")
                     self.parse(container: &container, key: nextKey, parameterKey: parameterKey, defaultValue: [], value: value) { $0.array }
                 }
         } else if let key = key,
