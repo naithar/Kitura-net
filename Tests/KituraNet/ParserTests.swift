@@ -88,7 +88,7 @@ class ParserTests: XCTestCase {
 
         let urlString = "https://example.org/path/data?" +
             "key[]=10&key[]=15&key[]=20&" +
-            "key1[][]=101&key1[][]=102&"
+            "key1[][]=101&key1[][]=102&key1[]=103"
 
         let url = urlString.data(using: .utf8)!
 
@@ -106,6 +106,7 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(urlParser.queryParameters["key1"][0].array?.count, 2, "Incorrect query")
         XCTAssertEqual(urlParser.queryParameters["key1"][0][0].int, 101, "Incorrect query")
         XCTAssertEqual(urlParser.queryParameters["key1"][0][1].int, 102, "Incorrect query")
+        XCTAssertEqual(urlParser.queryParameters["key1"][1].int, 103, "Incorrect query")
 
         XCTAssertNil(urlParser.queryParameters["nonexisting"]["sub"]["sub1"]["sub2"].string, "Wrong nonexisting key")
     }
