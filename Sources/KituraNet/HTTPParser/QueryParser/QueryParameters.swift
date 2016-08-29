@@ -116,12 +116,12 @@ public struct QueryParameters {
             let regex = self.keyedParameterRegex,
             let match = regex.firstMatch(in: key, options: [], range: NSMakeRange(0, key.characters.count)) { //checks for dictionary and array
                 let nsKey = NSString(string: key)
-                let matchRange = match.rangeAt(0)
+                let matchRange = match.range(at: 0)
 
-                let keyRange = match.rangeAt(1)
+                let keyRange = match.range(at: 1)
                 let parameterKey = nsKey.substring(with: keyRange)
 
-                let nextKeyRange = match.rangeAt(2)
+                let nextKeyRange = match.range(at: 2)
                 var nextKeyPart = nsKey.substring(with: nextKeyRange)
 
                 if nextKeyPart.characters.count > 0 {
