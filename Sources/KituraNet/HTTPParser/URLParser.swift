@@ -67,7 +67,7 @@ public class URLParser : CustomStringConvertible {
     ///
     /// The query parameters brokenn out
     ///
-    internal(set) public var queryParameters = QueryParameters()
+    private(set) public var queryParameters = Query.null
 
     ///
     /// Nicely formatted description of the parsed result
@@ -134,9 +134,7 @@ public class URLParser : CustomStringConvertible {
             port = parsedURL.port
         }
 
-        if let query = query {
-            self.queryParameters.parse(fromText: query)
-        }
+        self.queryParameters = Query(fromText: query)
     }
 
     ///

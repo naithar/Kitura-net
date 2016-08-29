@@ -25,7 +25,7 @@ extension Bool {
     }
 }
 
-extension QueryParameter: ParameterValueProtocol {
+extension Query: ParameterValue {
 
     public var string: String? {
         switch self.type {

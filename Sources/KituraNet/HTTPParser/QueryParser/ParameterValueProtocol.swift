@@ -16,7 +16,9 @@
 
 import Foundation
 
-protocol ParameterValueProtocol {
+protocol ParameterValue {
+
+    var object: Any { get }
 
     var string: String? { get }
 
