@@ -46,7 +46,7 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
     public private(set) var url = Data()
 
     // MARK: - Private
-    
+
     // TODO: trailers
 
     /// State of callbacks from parser WRT headers
@@ -72,14 +72,14 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
 
     /// TODO:
     private var ioBuffer = Data(capacity: HTTPIncomingMessage.bufferSize)
-    
+
     /// TODO: ???
     private var buffer = Data(capacity: HTTPIncomingMessage.bufferSize)
-    
+
     /// Indicates if the parser should save the message body and call onBody()
     var saveBody = true
-    
-    
+
+
 
     /// Initializes a new IncomingMessage
     ///
@@ -98,7 +98,7 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
     func setup(_ helper: IncomingMessageHelper) {
         self.helper = helper
     }
-    
+
     /// Parse the message
     ///
     /// - Parameter callback: (HTTPParserStatus) -> Void closure
@@ -107,31 +107,31 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
             status.error = .internalError
             return status
         }
-        
+
         var length = buffer.count
-        
+
         guard length > 0  else {
             /* Handle unexpected EOF. Usually just close the connection. */
             freeHTTPParser()
             status.error = .unexpectedEOF
             return status
         }
-        
+
         // If we were reset because of keep alive
         if  status.state == .reset  {
             reset()
         }
-        
+
         var start = 0
         while status.state == .initial  &&  status.error == nil  &&  length > 0  {
-            
+
             buffer.withUnsafeBytes() { [unowned self] (bytes: UnsafePointer<Int8>) in
                 let (numberParsed, upgrade) = parser.execute(bytes+start, length: length)
                 if upgrade == 1 {
                     // TODO handle new protocol
                 }
                 else if  numberParsed != length  {
-                
+
                     if  self.status.state == .reset  {
                         // Apparently the short message was a Continue. Let's just keep on parsing
                         start = numberParsed
@@ -146,7 +146,7 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
                 length -= numberParsed
             }
         }
-        
+
         return status
     }
 
@@ -254,15 +254,15 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
         else {
             return nil
         }
-        
+
     }
 
     /// Free the httpParser from the IncomingMessage
     private func freeHTTPParser () {
-        
+
         httpParser?.delegate = nil
         httpParser = nil
-        
+
     }
 
     /// Instructions for when reading URL portion
@@ -276,14 +276,14 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
     ///
     /// - Parameter data: the data
     func onHeaderField (_ data: Data) {
-        
+
         if lastHeaderWasAValue {
             addHeader()
         }
         lastHeaderField.append(data)
 
         lastHeaderWasAValue = false
-        
+
     }
 
     /// Instructions for when reading a header value
@@ -300,7 +300,7 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
 
         let headerKey = StringUtils.fromUtf8String(lastHeaderField)!
         let headerValue = StringUtils.fromUtf8String(lastHeaderValue)!
-        
+
         switch(headerKey.lowercased()) {
             // Headers with a simple value that are not merged (i.e. duplicates dropped)
             // https://mxr.mozilla.org/mozilla/source/netwerk/protocol/http/src/nsHttpHeaderArray.cpp
@@ -336,7 +336,7 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
     /// - Parameter versionMajor: major version of HTTP
     /// - Parameter versionMinor: minor version of HTTP
     func onHeadersComplete(method: String, versionMajor: UInt16, versionMinor: UInt16) {
-        
+
         httpVersionMajor = versionMajor
         httpVersionMinor = versionMinor
         self.method = method
@@ -348,7 +348,7 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
 
         status.keepAlive = httpParser?.isKeepAlive() ?? false
         status.state = .headersComplete
-        
+
     }
 
     /// Instructions for when beginning to read a message
@@ -357,7 +357,7 @@ public class HTTPIncomingMessage : HTTPParserDelegate {
 
     /// Instructions for when done reading the message
     func onMessageComplete() {
-        
+
         status.keepAlive = httpParser?.isKeepAlive() ?? false
         status.state = .messageComplete
         if  !status.keepAlive  {
