@@ -16,7 +16,6 @@
 
 import Foundation
 
-
 extension Bool {
 
     fileprivate init?(_ string: String) {
