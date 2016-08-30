@@ -36,7 +36,7 @@ extension Query {
         Query.parse(fromText: query, into: &self)
     }
 
-    static fileprivate func parse(fromText query: String, into parameter: inout Query) {
+    static private func parse(fromText query: String, into parameter: inout Query) {
         let pairs = query.components(separatedBy: "&")
 
         for pair in pairs {
