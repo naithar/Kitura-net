@@ -16,7 +16,7 @@
 
 import Foundation
 
-public struct Query {
+public struct Query: CustomStringConvertible {
 
 #if os(Linux)
     typealias RegularExpressionType = RegularExpression
@@ -46,6 +46,10 @@ public struct Query {
 
     public init(_ object: Any) {
         self.object = object
+    }
+
+    public var description: String {
+        return "\(self.object)"
     }
 }
 
