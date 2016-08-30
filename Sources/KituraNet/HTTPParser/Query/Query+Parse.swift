@@ -50,7 +50,7 @@ extension Query {
 
             let parameterValue = Query(parameterValueString)
             if case .null = parameterValue.type { continue }
-            parse(container: &parameter, key: key, value: parameterValue)
+            Query.parse(container: &parameter, key: key, value: parameterValue)
         }
     }
 
@@ -69,7 +69,7 @@ extension Query {
             } else {
                 newParameter = Query(defaultValue)
             }
-            self.parse(container: &newParameter, key: key, value: value)
+            Query.parse(container: &newParameter, key: key, value: value)
 
             if !parameterKey.isEmpty {
                 container[parameterKey] = newParameter
@@ -111,10 +111,10 @@ extension Query {
                         nextKeyPart = escaped
                     }
                     let nextKey = nsKey.replacingCharacters(in: matchRange, with: nextKeyPart)
-                    self.parse(container: &container, key: nextKey, parameterKey: parameterKey, defaultValue: [:], value: value) { $0.dictionary }
+                    Query.parse(container: &container, key: nextKey, parameterKey: parameterKey, defaultValue: [:], value: value) { $0.dictionary }
                 } else {
                     let nextKey = nsKey.replacingCharacters(in: matchRange, with: "")
-                    self.parse(container: &container, key: nextKey, parameterKey: parameterKey, defaultValue: [], value: value) { $0.array }
+                    Query.parse(container: &container, key: nextKey, parameterKey: parameterKey, defaultValue: [], value: value) { $0.array }
                 }
         } else if let key = key,
             !key.isEmpty {
