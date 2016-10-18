@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import Socket
+
 public protocol ServerLifecycleDelegate: class {
 
     func started(server: HTTPServer, on port: Int, using socket: Socket)
