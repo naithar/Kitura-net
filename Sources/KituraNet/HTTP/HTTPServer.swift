@@ -28,25 +28,27 @@ public class HTTPServer {
     /// HTTP `ServerDelegate`.
     public weak var delegate: ServerDelegate?
 
+    public weak var stateDelegate: ServerLifecycleDelegate?
+
     /// SSL cert configs for handling client requests
     public var sslConfig: SSLService.Configuration?
-    
+
     /// Port number for listening for new connections.
     public private(set) var port: Int?
-    
+
     /// TCP socket used for listening for new connections
     private var listenSocket: Socket?
-    
+
     /// Whether the HTTP server has stopped listening
     var stopped = false
-    
+
     /// Incoming socket handler
     private let socketManager = IncomingSocketManager()
-    
+
     /// Maximum number of pending connections
     private let maxPendingConnections = 100
 
-    
+
     /// Listen for connections on a socket.
     ///
     /// Listens for connections on a socket
@@ -117,7 +119,7 @@ public class HTTPServer {
         server.listen(port: port, errorHandler: errorHandler)
         return server
     }
-    
+
     /// Handle instructions for listening on a socket
     ///
     /// - Parameter socket: socket to use for connecting
@@ -143,7 +145,7 @@ public class HTTPServer {
             }
         }
     }
-    
+
     /// Handle a new client HTTP request
     ///
     /// - Parameter clientSocket: the socket used for connecting
@@ -152,14 +154,14 @@ public class HTTPServer {
         guard let delegate = delegate else {
             return
         }
-        
+
         socketManager.handle(socket: clientSocket, using: delegate)
     }
-    
+
     /// Wait for all of the listeners to stop.
     ///
     /// - todo: Note that this calls the ListenerGroup object, and is left in for
-    /// backwards compability reasons. Can be safely removed once IBM-Swift/Kitura/Kitura.swift 
+    /// backwards compability reasons. Can be safely removed once IBM-Swift/Kitura/Kitura.swift
     /// is patched to directly talk to ListenerGroup.
     public static func waitForListeners() {
         ListenerGroup.waitForListeners()
