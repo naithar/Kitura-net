@@ -22,7 +22,7 @@ public protocol Server {
 
     weak var delegate: ServerDelegate? { get set }
 
-    weak var stateDelegate: ServerLifecycleDelegate? { get set }
+    weak var lifecycleDelegate: ServerLifecycleDelegate? { get set }
 
     var port: Int? { get }
 

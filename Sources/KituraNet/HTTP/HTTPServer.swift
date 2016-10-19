@@ -30,7 +30,7 @@ public class HTTPServer: Server {
     /// HTTP `ServerDelegate`.
     public weak var delegate: ServerDelegate?
 
-    public weak var stateDelegate: ServerLifecycleDelegate?
+    public weak var lifecycleDelegate: ServerLifecycleDelegate?
 
     /// Port number for listening for new connections.
     public private(set) var port: Int?

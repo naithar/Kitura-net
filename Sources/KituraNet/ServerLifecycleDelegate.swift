@@ -28,14 +28,14 @@ public protocol ServerLifecycleDelegate: class {
 extension ServerLifecycleDelegate {
 
     func started(server: Server, on port: Int, using socket: Socket) {
-        Log.info("Server: \(server) has started listening on port: \(port) using socket: \(socket)")
+        Log.info("[Lifecycle] Server: \(server) has started listening on port: \(port) using socket: \(socket)")
     }
 
     func failed(server: Server, on port: Int, with error: Error) {
-        Log.error("Server: \(server) failed on port: \(port) with error: \(error)")
+        Log.error("[Lifecycle] Server: \(server) failed on port: \(port) with error: \(error)")
     }
 
     func stopped(server: Server, on port: Int) {
-        Log.info("Server: \(server) stopped listening on port: \(port)")
+        Log.info("[Lifecycle] Server: \(server) stopped listening on port: \(port)")
     }
 }
