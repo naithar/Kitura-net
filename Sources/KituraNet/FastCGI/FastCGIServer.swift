@@ -113,7 +113,7 @@ public class FastCGIServer: Server {
             try socket.listen(on: port, maxBacklogSize: maxPendingConnections)
             Log.info("Listening on port \(port) (FastCGI)")
 
-            self.lifecycleDelegate?.started(self, on: port, using: socket)
+            self.lifecycleDelegate?.serverStarted(self, on: port, using: socket)
 
             // TODO: Change server exit to not rely on error being thrown
             repeat {
@@ -126,7 +126,7 @@ public class FastCGIServer: Server {
             if stopped && error.errorCode == Int32(Socket.SOCKET_ERR_ACCEPT_FAILED) {
                 Log.info("FastCGI Server has stopped listening")
 
-                self.lifecycleDelegate?.stopped(self, on: port)
+                self.lifecycleDelegate?.serverStopped(self, on: port)
             }
             else {
                 throw error
