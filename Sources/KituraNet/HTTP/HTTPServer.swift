@@ -25,7 +25,7 @@ import SSLService
 /// An HTTP server that listens for connections on a socket.
 public class HTTPServer: Server {
 
-    typealias ServerType = HTTPServer
+    public typealias ServerType = HTTPServer
 
     /// HTTP `ServerDelegate`.
     public weak var delegate: ServerDelegate?

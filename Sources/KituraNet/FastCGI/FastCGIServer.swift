@@ -23,7 +23,7 @@ import LoggerAPI
 /// protocol.
 public class FastCGIServer: Server {
 
-    typealias ServerType = FastCGIServer
+    public typealias ServerType = FastCGIServer
 
     /// The `ServerDelegate` to handle incoming requests.
     public weak var delegate: ServerDelegate?
