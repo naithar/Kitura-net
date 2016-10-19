@@ -23,6 +23,8 @@ import LoggerAPI
 /// protocol.
 public class FastCGIServer: Server {
 
+    public typealias ServerType = FastCGIServer
+
     /// The `ServerDelegate` to handle incoming requests.
     public weak var delegate: ServerDelegate?
 
@@ -93,7 +95,7 @@ public class FastCGIServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `FastCGIServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
+    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> FastCGIServer {
 
         let server = FastCGI.createServer()
         server.delegate = delegate
