@@ -34,9 +34,9 @@ class LifecycleDelegateTests: XCTestCase {
 
     func testLifecycle() {
         performServerTest(delegate, asyncTasks: { expectation in
-            self.performRequest("get", path: "/any", callback: { _ in
+            self.performRequest("get", path: "/any", callback: { response in
                 XCTAssertEqual(response!.statusCode, HTTPStatusCode.OK, "Status code wasn't .Ok was \(response!.statusCode)")
-                XCTAssertTrue(self.started, "server delegate serverStarted:on:using: wasn't called")
+                XCTAssertTrue(self.started, "server delegate serverStarted:on: wasn't called")
                 expectation.fulfill()
             })
         })
@@ -47,14 +47,18 @@ class LifecycleDelegateTests: XCTestCase {
     class TestServerDelegate : ServerDelegate {
 
         func handle(request: ServerRequest, response: ServerResponse) {
-            try response.end()
+            do {
+                try response.end()
+            } catch {
+                print("Error making response.")
+            }
         }
     }
 }
 
 extension LifecycleDelegateTests {
 
-    func serverStarted(_ server: Server, on port: Int, using socket: Socket) {
+    func serverStarted(_ server: Server, on port: Int) {
         self.started = true
     }
 
