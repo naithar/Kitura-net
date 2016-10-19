@@ -39,15 +39,8 @@ class LifecycleDelegateTests: XCTestCase {
     private let delegate = TestServerDelegate()
     var started = false
     var finished = false
-    var closure: (() -> Void)? = nil
 
     func testLifecycle() {
-        var finishExpectation: XCTestExpectation?
-
-        self.closure = {
-            XCTAssertTrue(self.finished, "server delegate serverStopped:on: wasn't called")
-            finishExpectation?.fulfill()
-        }
 
         performServerTest(delegate, lifecycleDelegate: self, asyncTasks: { expectation in
             self.performRequest("get", path: "/any", callback: { response in
@@ -57,13 +50,8 @@ class LifecycleDelegateTests: XCTestCase {
             })
         })
 
-        if (!self.finished) {
-            finishExpectation = self.expectation(description: "finish expectation")
-
-            self.waitExpectation(timeout: 5) { error in
-                XCTAssertNil(error)
-            }
-        }
+        sleep(1)
+        XCTAssertTrue(self.finished, "server delegate serverStopped:on: wasn't called")
     }
 
     private class TestServerDelegate : ServerDelegate {
@@ -98,6 +86,5 @@ extension LifecycleDelegateTests: ServerLifecycleDelegate {
     func serverStopped(_ server: Server, on port: Int) {
         print("[Lifecycle stopped]")
         self.finished = true
-        self.closure?()
     }
 }
