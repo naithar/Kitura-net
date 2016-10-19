@@ -25,8 +25,6 @@ import SSLService
 /// An HTTP server that listens for connections on a socket.
 public class HTTPServer: Server {
 
-    public typealias ServerType = HTTPServer
-
     /// HTTP `ServerDelegate`.
     public weak var delegate: ServerDelegate?
 
@@ -111,7 +109,7 @@ public class HTTPServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `HTTPServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> HTTPServer {
+    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
         let server = HTTP.createServer()
         server.delegate = delegate
         server.listen(port: port, errorHandler: errorHandler)
