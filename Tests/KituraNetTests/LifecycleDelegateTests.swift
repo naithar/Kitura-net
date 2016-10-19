@@ -28,12 +28,20 @@ class LifecycleDelegateTests: XCTestCase {
         ]
     }
 
-    let delegate = TestServerDelegate()
-    var started: Bool = false
-    var finished: Bool = false
+    override func setUp() {
+        doSetUp()
+    }
+
+    override func tearDown() {
+        doTearDown()
+    }
+
+    private let delegate = TestServerDelegate()
+    var started = false
+    var finished = false
 
     func testLifecycle() {
-        performServerTest(delegate, asyncTasks: { expectation in
+        performServerTest(delegate, lifecycleDelegate: self, asyncTasks: { expectation in
             self.performRequest("get", path: "/any", callback: { response in
                 XCTAssertEqual(response!.statusCode, HTTPStatusCode.OK, "Status code wasn't .Ok was \(response!.statusCode)")
                 XCTAssertTrue(self.started, "server delegate serverStarted:on: wasn't called")
@@ -44,25 +52,37 @@ class LifecycleDelegateTests: XCTestCase {
         XCTAssertTrue(self.finished, "server delegate serverStopped:on: wasn't called")
     }
 
-    class TestServerDelegate : ServerDelegate {
+    private class TestServerDelegate : ServerDelegate {
 
         func handle(request: ServerRequest, response: ServerResponse) {
+                handleGet(request: request, response: response)
+
+        }
+
+        func handleGet(request: ServerRequest, response: ServerResponse) {
+            let payload = "hello"
+            let payloadData = payload.data(using: .utf8)!
             do {
+                response.headers["Content-Length"] = ["\(payloadData.count)"]
+                try response.write(from: payloadData)
                 try response.end()
-            } catch {
-                print("Error making response.")
+            }
+            catch {
+                print("Error writing response.")
             }
         }
     }
 }
 
-extension LifecycleDelegateTests {
+extension LifecycleDelegateTests: ServerLifecycleDelegate {
 
     func serverStarted(_ server: Server, on port: Int) {
+        print("[Lifecycle started]")
         self.started = true
     }
 
     func serverStopped(_ server: Server, on port: Int) {
+        print("[Lifecycle stopped]")
         self.finished = true
     }
 }

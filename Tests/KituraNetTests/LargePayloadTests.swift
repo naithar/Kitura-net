@@ -38,7 +38,7 @@ class LargePayloadTests: XCTestCase {
         doTearDown()
     }
 
-    let delegate = TestServerDelegate()
+    private let delegate = TestServerDelegate()
 
     func testLargePosts() {
         performServerTest(delegate, asyncTasks: { expectation in
@@ -77,7 +77,7 @@ class LargePayloadTests: XCTestCase {
         })
     }
 
-    class TestServerDelegate : ServerDelegate {
+    private class TestServerDelegate : ServerDelegate {
 
         func handle(request: ServerRequest, response: ServerResponse) {
             if  request.method.uppercased() == "GET" {

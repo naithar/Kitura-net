@@ -128,9 +128,10 @@ public class HTTPServer: Server {
     private func listen(socket: Socket, port: Int) throws {
         do {
             try socket.listen(on: port, maxBacklogSize: maxPendingConnections)
-            Log.info("Listening on port \(port)")
 
             self.lifecycleDelegate?.serverStarted(self, on: port)
+            
+            Log.info("Listening on port \(port)")
 
             // TODO: Change server exit to not rely on error being thrown
             repeat {
@@ -141,9 +142,9 @@ public class HTTPServer: Server {
             } while true
         } catch let error as Socket.Error {
             if stopped && error.errorCode == Int32(Socket.SOCKET_ERR_ACCEPT_FAILED) {
-                Log.info("Server has stopped listening")
-
                 self.lifecycleDelegate?.serverStopped(self, on: port)
+
+                Log.info("Server has stopped listening")
             }
             else {
                 throw error
