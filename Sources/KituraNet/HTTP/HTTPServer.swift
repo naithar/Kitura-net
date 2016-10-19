@@ -30,9 +30,6 @@ public class HTTPServer: Server {
 
     public weak var stateDelegate: ServerLifecycleDelegate?
 
-    /// SSL cert configs for handling client requests
-    public var sslConfig: SSLService.Configuration?
-
     /// Port number for listening for new connections.
     public private(set) var port: Int?
 
@@ -42,11 +39,16 @@ public class HTTPServer: Server {
     /// Whether the HTTP server has stopped listening
     private var stopped = false
 
+    /// Maximum number of pending connections
+    private let maxPendingConnections = 100
+
+
     /// Incoming socket handler
     private let socketManager = IncomingSocketManager()
 
-    /// Maximum number of pending connections
-    private let maxPendingConnections = 100
+    /// SSL cert configs for handling client requests
+    public var sslConfig: SSLService.Configuration?
+
 
 
     /// Listen for connections on a socket.
@@ -98,13 +100,7 @@ public class HTTPServer: Server {
         ListenerGroup.enqueueAsynchronously(on: DispatchQueue.global(), block: queuedBlock)
     }
 
-    /// Stop listening for new connections.
-    public func stop() {
-        if let listenSocket = listenSocket {
-            stopped = true
-            listenSocket.close()
-        }
-    }
+
 
     /// Static method to create a new HTTPServer and have it listen for connections.
     ///
@@ -113,7 +109,7 @@ public class HTTPServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `HTTPServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> HTTPServer {
+    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
         let server = HTTP.createServer()
         server.delegate = delegate
         server.listen(port: port, errorHandler: errorHandler)
@@ -124,7 +120,7 @@ public class HTTPServer: Server {
     ///
     /// - Parameter socket: socket to use for connecting
     /// - Parameter port: number to listen on
-    func listen(socket: Socket, port: Int) throws {
+    private func listen(socket: Socket, port: Int) throws {
         do {
             try socket.listen(on: port, maxBacklogSize: maxPendingConnections)
             Log.info("Listening on port \(port)")
@@ -149,13 +145,21 @@ public class HTTPServer: Server {
     /// Handle a new client HTTP request
     ///
     /// - Parameter clientSocket: the socket used for connecting
-    func handleClientRequest(socket clientSocket: Socket, fromKeepAlive: Bool=false) {
+    private func handleClientRequest(socket clientSocket: Socket, fromKeepAlive: Bool=false) {
 
         guard let delegate = delegate else {
             return
         }
 
         socketManager.handle(socket: clientSocket, using: delegate)
+    }
+
+    /// Stop listening for new connections.
+    public func stop() {
+        if let listenSocket = listenSocket {
+            stopped = true
+            listenSocket.close()
+        }
     }
 
     /// Wait for all of the listeners to stop.

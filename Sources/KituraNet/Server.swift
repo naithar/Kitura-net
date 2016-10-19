@@ -23,4 +23,10 @@ public protocol Server {
     weak var stateDelegate: ServerLifecycleDelegate? { get set }
 
     var port: Int? { get }
+
+    func listen(port: Int, errorHandler: ((Swift.Error) -> Void)? = nil)
+
+    static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server
+
+    public func stop()
 }
