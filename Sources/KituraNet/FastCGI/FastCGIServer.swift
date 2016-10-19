@@ -21,10 +21,12 @@ import LoggerAPI
 
 /// A server that listens for incoming HTTP requests that are sent using the FastCGI
 /// protocol.
-public class FastCGIServer {
+public class FastCGIServer: Server {
 
     /// The `ServerDelegate` to handle incoming requests.
     public weak var delegate: ServerDelegate?
+
+    public weak var stateDelegate: ServerLifecycleDelegate?
 
     /// Port number for listening for new connections
     public private(set) var port: Int?
@@ -33,7 +35,7 @@ public class FastCGIServer {
     private var listenSocket: Socket?
 
     /// Whether the FastCGI server has stopped listening
-    var stopped = false
+    private var stopped = false
 
     /// Listens for connections on a socket
     ///
@@ -125,7 +127,7 @@ public class FastCGIServer {
             }
         }
     }
-    
+
     /// Send multiplex request rejections
     func sendMultiplexRequestRejections(request: FastCGIServerRequest, response: FastCGIServerResponse) {
         if request.extraRequestIds.count > 0 {

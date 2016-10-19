@@ -23,7 +23,7 @@ import SSLService
 // MARK: HTTPServer
 
 /// An HTTP server that listens for connections on a socket.
-public class HTTPServer {
+public class HTTPServer: Server {
 
     /// HTTP `ServerDelegate`.
     public weak var delegate: ServerDelegate?
@@ -40,7 +40,7 @@ public class HTTPServer {
     private var listenSocket: Socket?
 
     /// Whether the HTTP server has stopped listening
-    var stopped = false
+    private var stopped = false
 
     /// Incoming socket handler
     private let socketManager = IncomingSocketManager()
