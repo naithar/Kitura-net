@@ -93,6 +93,6 @@ extension XCTestCase: KituraNetTest {
     }
 }
 
-extension XCTestCase: ServerLifecycleDelegate {
+extension KituraNetTest: ServerLifecycleDelegate {
 
 }
