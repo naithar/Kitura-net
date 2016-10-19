@@ -21,7 +21,7 @@ import XCTest
 import Foundation
 import Dispatch
 
-protocol KituraNetTest {
+protocol KituraNetTest: ServerLifecycleDelegate {
     func expectation(_ index: Int) -> XCTestExpectation
     func waitExpectation(timeout t: TimeInterval, handler: XCWaitCompletionHandler?)
 }
@@ -91,8 +91,4 @@ extension XCTestCase: KituraNetTest {
     func waitExpectation(timeout t: TimeInterval, handler: XCWaitCompletionHandler?) {
         self.waitForExpectations(timeout: t, handler: handler)
     }
-}
-
-extension KituraNetTest: ServerLifecycleDelegate {
-
 }
