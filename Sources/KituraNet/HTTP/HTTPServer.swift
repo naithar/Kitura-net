@@ -130,7 +130,7 @@ public class HTTPServer: Server {
             try socket.listen(on: port, maxBacklogSize: maxPendingConnections)
             Log.info("Listening on port \(port)")
 
-            self.lifecycleDelegate?.serverStarted(self, on: port, using: socket)
+            self.lifecycleDelegate?.serverStarted(self, on: port)
 
             // TODO: Change server exit to not rely on error being thrown
             repeat {
