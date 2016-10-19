@@ -28,5 +28,5 @@ public protocol Server {
 
     static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> Server
 
-    public func stop()
+    func stop()
 }
