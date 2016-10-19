@@ -18,6 +18,8 @@ import Socket
 
 public protocol Server {
 
+    associatedtype ServerType
+
     weak var delegate: ServerDelegate? { get set }
 
     weak var stateDelegate: ServerLifecycleDelegate? { get set }
@@ -26,7 +28,7 @@ public protocol Server {
 
     func listen(port: Int, errorHandler: ((Swift.Error) -> Void)?)
 
-    static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> Server
+    static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> ServerType
 
     func stop()
 }
