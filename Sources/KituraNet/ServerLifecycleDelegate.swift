@@ -19,23 +19,23 @@ import LoggerAPI
 
 public protocol ServerLifecycleDelegate: class {
 
-    func started(server: Server, on port: Int, using socket: Socket)
-    func failed(server: Server, on port: Int, with error: Error)
-    func stopped(server: Server, on port: Int)
+    func started<T: Server>(server: T, on port: Int, using socket: Socket)
+    func failed<T: Server>(server: T, on port: Int, with error: Error)
+    func stopped<T: Server>(server: T, on port: Int)
 }
 
 ///Default implementation for making all delegate methods optional
 extension ServerLifecycleDelegate {
 
-    func started(server: Server, on port: Int, using socket: Socket) {
+    func started<T: Server>(server: T, on port: Int, using socket: Socket) {
         Log.info("[Lifecycle] Server: \(server) has started listening on port: \(port) using socket: \(socket)")
     }
 
-    func failed(server: Server, on port: Int, with error: Error) {
+    func failed<T: Server>(server: T, on port: Int, with error: Error) {
         Log.error("[Lifecycle] Server: \(server) failed on port: \(port) with error: \(error)")
     }
 
-    func stopped(server: Server, on port: Int) {
+    func stopped<T: Server>(server: T, on port: Int) {
         Log.info("[Lifecycle] Server: \(server) stopped listening on port: \(port)")
     }
 }
