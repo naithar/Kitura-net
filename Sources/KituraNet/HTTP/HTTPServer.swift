@@ -113,9 +113,10 @@ public class HTTPServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `HTTPServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
+    public static func listen(port: Int, delegate: ServerDelegate, lifecycleDelegate: ServerLifecycleDelegate? = nil, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
         let server = HTTP.createServer()
         server.delegate = delegate
+        server.lifecycleDelegate = lifecycleDelegate
         server.listen(port: port, errorHandler: errorHandler)
         return server
     }

@@ -71,9 +71,13 @@ extension KituraNetTest {
     }
 
     private func setupServer(port: Int, delegate: ServerDelegate) -> Server {
-        return HTTPServer.listen(port: port, delegate: delegate, errorHandler: {(error: Swift.Error) -> Void in
-            print("Handling error in KituraNetTest.setupServer \(error)")
+        let server = HTTPServer.listen(port: port,
+            delegate: delegate,
+            errorHandler: { (error: Swift.Error) -> Void in
+                print("Handling error in KituraNetTest.setupServer \(error)")
         })
+
+        return server
     }
 }
 

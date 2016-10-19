@@ -97,10 +97,11 @@ public class FastCGIServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `FastCGIServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
+    public static func listen(port: Int, delegate: ServerDelegate, lifecycleDelegate: ServerLifecycleDelegate? = nil, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
 
         let server = FastCGI.createServer()
         server.delegate = delegate
+        server.lifecycleDelegate = lifecycleDelegate
         server.listen(port: port, errorHandler: errorHandler)
         return server
 
