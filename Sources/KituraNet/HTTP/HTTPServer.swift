@@ -80,6 +80,8 @@ public class HTTPServer: Server {
             } else {
                 Log.error("Error creating socket: \(error)")
             }
+
+            self.lifecycleDelegate?.serverFailed(self, on: port, error: error)
         }
 
         guard let socket = self.listenSocket else {
@@ -96,6 +98,8 @@ public class HTTPServer: Server {
                 } else {
                     Log.error("Error listening on socket: \(error)")
                 }
+
+                self.lifecycleDelegate?.serverFailed(self, on: port, error: error)
             }
         })
 
