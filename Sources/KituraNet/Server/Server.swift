@@ -24,9 +24,9 @@ public protocol Server {
 
     var port: Int? { get }
 
-    func listen(port: Int, errorHandler: ((Swift.Error) -> Void)?)
+    func listen(port: Int)
 
-    static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> ServerType
+    static func listen(port: Int, delegate: ServerDelegate) -> ServerType
 
     func stop()
 

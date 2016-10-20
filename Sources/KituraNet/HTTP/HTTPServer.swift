@@ -57,7 +57,7 @@ public class HTTPServer: Server {
     ///
     /// - Parameter port: port number for new connections (eg. 8090)
     /// - Parameter errorHandler: optional callback for error handling
-    public func listen(port: Int, errorHandler: ((Swift.Error) -> Void)? = nil) {
+    public func listen(port: Int) {
         self.port = port
         do {
             self.listenSocket = try Socket.create()
@@ -78,6 +78,8 @@ public class HTTPServer: Server {
             } else {
                 Log.error("Error creating socket: \(error)")
             }
+
+            self.lifecycleListener.performFailCallbacks(with: error)
         }
 
         guard let socket = self.listenSocket else {
@@ -89,11 +91,11 @@ public class HTTPServer: Server {
             do {
                 try self.listen(socket: socket, port: port)
             } catch {
-                if let callback = errorHandler {
-                    callback(error)
-                } else {
-                    Log.error("Error listening on socket: \(error)")
-                }
+                // if let callback = errorHandler {
+                //     callback(error)
+                // } else {
+                //     Log.error("Error listening on socket: \(error)")
+                // }
 
                 self.lifecycleListener.performFailCallbacks(with: error)
             }
@@ -111,10 +113,10 @@ public class HTTPServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `HTTPServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> HTTPServer {
+    public static func listen(port: Int, delegate: ServerDelegate) -> HTTPServer {
         let server = HTTP.createServer()
         server.delegate = delegate
-        server.listen(port: port, errorHandler: errorHandler)
+        server.listen(port: port)
         return server
     }
 

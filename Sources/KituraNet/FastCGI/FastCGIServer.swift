@@ -54,17 +54,19 @@ public class FastCGIServer: Server {
     /// - Parameter port: port number for new connections (ex. 9000)
     /// - Parameter errorHandler: optional callback for error handling
     ///
-    public func listen(port: Int, errorHandler: ((Swift.Error) -> Void)? = nil) {
+    public func listen(port: Int) {
         self.port = port
 
         do {
             self.listenSocket = try Socket.create()
         } catch {
-            if let callback = errorHandler {
-                callback(error)
-            } else {
-                Log.error("Error creating socket: \(error)")
-            }
+            // if let callback = errorHandler {
+            //     callback(error)
+            // } else {
+            //     Log.error("Error creating socket: \(error)")
+            // }
+
+            self.lifecycleListener.performFailCallbacks(with: error)
         }
 
         guard let socket = self.listenSocket else {
@@ -76,11 +78,11 @@ public class FastCGIServer: Server {
             do {
                 try self.listen(socket: socket, port: port)
             } catch {
-                if let callback = errorHandler {
-                    callback(error)
-                } else {
-                    Log.error("Error listening on socket: \(error)")
-                }
+                // if let callback = errorHandler {
+                //     callback(error)
+                // } else {
+                //     Log.error("Error listening on socket: \(error)")
+                // }
 
                 self.lifecycleListener.performFailCallbacks(with: error)
             }
@@ -97,11 +99,11 @@ public class FastCGIServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `FastCGIServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> FastCGIServer {
+    public static func listen(port: Int, delegate: ServerDelegate) -> FastCGIServer {
 
         let server = FastCGI.createServer()
         server.delegate = delegate
-        server.listen(port: port, errorHandler: errorHandler)
+        server.listen(port: port)
         return server
 
     }
