@@ -19,27 +19,38 @@ import LoggerAPI
 
 class ServerLifecycleListener {
 
-    func performStartCallbacks() {
+    typealias ErrorClosure = (Swift.Error) -> Void
+    private var startCallbacks = [() -> Void]()
+    private var stopCallbacks = [() -> Void]()
+    private var failCallbacks = [ErrorClosure]()
 
+    func performStartCallbacks() {
+        for callback in self.startCallbacks {
+            callback()
+        }
     }
 
     func performStopCallbacks() {
-
+        for callback in self.stopCallbacks {
+            callback()
+        }
     }
 
     func performFailCallbacks(with error: Swift.Error) {
-
+        for callback in self.failCallbacks {
+            callback(error)
+        }
     }
 
-    func addStartCallback(callback: @escaping () -> Void) {
-
+    func addStartCallback(_ callback: @escaping () -> Void) {
+        self.startCallbacks.append(callback)
     }
 
-    func addStopCallback(callback: @escaping () -> Void) {
-
+    func addStopCallback(_ callback: @escaping () -> Void) {
+        self.stopCallbacks.append(callback)
     }
 
-    func addFailCallback(callback: @escaping (Swift.Error) -> Void) {
-
+    func addFailCallback(_ callback: @escaping (Swift.Error) -> Void) {
+        self.failCallbacks.append(callback)
     }
 }

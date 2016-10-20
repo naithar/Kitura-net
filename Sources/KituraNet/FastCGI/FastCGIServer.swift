@@ -47,7 +47,7 @@ public class FastCGIServer: Server {
     /// TCP socket used for listening for new connections
     private var listenSocket: Socket?
 
-    private let lifecycleListener = ServerLifecycleListener()
+    fileprivate let lifecycleListener = ServerLifecycleListener()
 
     /// Listens for connections on a socket
     ///
@@ -198,4 +198,25 @@ public class FastCGIServer: Server {
 
     }
 
+}
+
+extension FastCGIServer: ServerLifecycleProtocol {
+
+    @discardableResult
+    public func started(callback: @escaping () -> Void) -> Self {
+        self.lifecycleListener.addStartCallback(callback)
+        return self
+    }
+
+    @discardableResult
+    public func stopped(callback: @escaping () -> Void) -> Self {
+        self.lifecycleListener.addStopCallback(callback)
+        return self
+    }
+
+    @discardableResult
+    public func failed(callback: @escaping (Swift.Error) -> Void) -> Self {
+        self.lifecycleListener.addFailCallback(callback)
+        return self
+    }
 }

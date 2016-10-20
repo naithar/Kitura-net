@@ -18,7 +18,12 @@ import Socket
 
 public protocol ServerLifecycleProtocol {
 
+    @discardableResult
     func started(callback: @escaping () -> Void) -> Self
+
+    @discardableResult
     func stopped(callback: @escaping () -> Void) -> Self
+
+    @discardableResult
     func failed(callback: @escaping (Swift.Error) -> Void) -> Self
 }

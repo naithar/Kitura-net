@@ -48,7 +48,7 @@ public class HTTPServer: Server {
     /// SSL cert configs for handling client requests
     public var sslConfig: SSLService.Configuration?
 
-    private let lifecycleListener = ServerLifecycleListener()
+    fileprivate let lifecycleListener = ServerLifecycleListener()
 
 
     /// Listen for connections on a socket.
@@ -177,5 +177,26 @@ public class HTTPServer: Server {
     /// is patched to directly talk to ListenerGroup.
     public static func waitForListeners() {
         ListenerGroup.waitForListeners()
+    }
+}
+
+extension HTTPServer: ServerLifecycleProtocol {
+
+    @discardableResult
+    public func started(callback: @escaping () -> Void) -> Self {
+        self.lifecycleListener.addStartCallback(callback)
+        return self
+    }
+
+    @discardableResult
+    public func stopped(callback: @escaping () -> Void) -> Self {
+        self.lifecycleListener.addStopCallback(callback)
+        return self
+    }
+
+    @discardableResult
+    public func failed(callback: @escaping (Swift.Error) -> Void) -> Self {
+        self.lifecycleListener.addFailCallback(callback)
+        return self
     }
 }
