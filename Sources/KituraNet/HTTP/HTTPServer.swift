@@ -56,7 +56,6 @@ public class HTTPServer: Server {
     /// Listens for connections on a socket
     ///
     /// - Parameter port: port number for new connections (eg. 8090)
-    /// - Parameter errorHandler: optional callback for error handling
     public func listen(port: Int) {
         self.port = port
         do {
@@ -69,17 +68,18 @@ public class HTTPServer: Server {
             }
         }
         catch let error {
-            if let socketError = error as? Socket.Error {
-                Log.error("Error creating socket reported:\n \(socketError.description)")
-            } else if let sslError = error as? SSLError {
-                // we have to catch SSLErrors separately since we are
-                // calling SSLService.Configuration
-                Log.error("Error creating socket reported:\n \(sslError.description)")
-            } else {
-                Log.error("Error creating socket: \(error)")
+            if !self.lifecycleListener.performFailCallbacks(with: error) {
+                switch error {
+                case let error as Socket.Error:
+                    Log.error("Error creating socket reported:\n \(error.description)")
+                case let error as SSLError:
+                    // we have to catch SSLErrors separately since we are
+                    // calling SSLService.Configuration
+                    Log.error("Error creating socket reported:\n \(error.description)")
+                default:
+                    Log.error("Error creating socket: \(error)")
+                }
             }
-
-            self.lifecycleListener.performFailCallbacks(with: error)
         }
 
         guard let socket = self.listenSocket else {
@@ -91,13 +91,9 @@ public class HTTPServer: Server {
             do {
                 try self.listen(socket: socket, port: port)
             } catch {
-                // if let callback = errorHandler {
-                //     callback(error)
-                // } else {
-                //     Log.error("Error listening on socket: \(error)")
-                // }
-
-                self.lifecycleListener.performFailCallbacks(with: error)
+                if !self.lifecycleListener.performFailCallbacks(with: error) {
+                    Log.error("Error listening on socket: \(error)")
+                }
             }
         })
 
@@ -110,7 +106,6 @@ public class HTTPServer: Server {
     ///
     /// - Parameter port: port number for accepting new connections
     /// - Parameter delegate: the delegate handler for HTTP connections
-    /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `HTTPServer` instance
     public static func listen(port: Int, delegate: ServerDelegate) -> HTTPServer {

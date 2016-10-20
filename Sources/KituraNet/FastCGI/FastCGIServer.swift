@@ -52,7 +52,6 @@ public class FastCGIServer: Server {
     /// Listens for connections on a socket
     ///
     /// - Parameter port: port number for new connections (ex. 9000)
-    /// - Parameter errorHandler: optional callback for error handling
     ///
     public func listen(port: Int) {
         self.port = port
@@ -60,13 +59,9 @@ public class FastCGIServer: Server {
         do {
             self.listenSocket = try Socket.create()
         } catch {
-            // if let callback = errorHandler {
-            //     callback(error)
-            // } else {
-            //     Log.error("Error creating socket: \(error)")
-            // }
-
-            self.lifecycleListener.performFailCallbacks(with: error)
+            if !self.lifecycleListener.performFailCallbacks(with: error) {
+                Log.error("Error creating socket: \(error)")
+            }
         }
 
         guard let socket = self.listenSocket else {
@@ -78,13 +73,9 @@ public class FastCGIServer: Server {
             do {
                 try self.listen(socket: socket, port: port)
             } catch {
-                // if let callback = errorHandler {
-                //     callback(error)
-                // } else {
-                //     Log.error("Error listening on socket: \(error)")
-                // }
-
-                self.lifecycleListener.performFailCallbacks(with: error)
+                if !self.lifecycleListener.performFailCallbacks(with: error) {
+                    Log.error("Error listening on socket: \(error)")
+                }
             }
         })
 
@@ -96,7 +87,6 @@ public class FastCGIServer: Server {
     ///
     /// - Parameter port: port number for accepting new connections
     /// - Parameter delegate: the delegate handler for FastCGI/HTTP connections
-    /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `FastCGIServer` instance
     public static func listen(port: Int, delegate: ServerDelegate) -> FastCGIServer {

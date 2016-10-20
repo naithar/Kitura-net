@@ -24,22 +24,43 @@ class ServerLifecycleListener {
     private var stopCallbacks = [() -> Void]()
     private var failCallbacks = [ErrorClosure]()
 
-    func performStartCallbacks() {
+    @discardableResult
+    func performStartCallbacks() -> Bool {
+        guard self.startCallbacks.count > 0 else {
+            return false
+        }
+
         for callback in self.startCallbacks {
             callback()
         }
+
+        return true
     }
 
-    func performStopCallbacks() {
+    @discardableResult
+    func performStopCallbacks() -> Bool {
+        guard self.stopCallbacks.count > 0 else {
+            return false
+        }
+
         for callback in self.stopCallbacks {
             callback()
         }
+
+        return true
     }
 
-    func performFailCallbacks(with error: Swift.Error) {
+    @discardableResult
+    func performFailCallbacks(with error: Swift.Error) -> Bool {
+        guard self.failCallbacks.count > 0 else {
+            return false
+        }
+
         for callback in self.failCallbacks {
             callback(error)
         }
+
+        return true
     }
 
     func addStartCallback(_ callback: @escaping () -> Void) {
