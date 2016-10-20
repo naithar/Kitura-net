@@ -37,31 +37,26 @@ class LifecycleDelegateTests: XCTestCase {
     }
 
     private let delegate = TestServerDelegate()
-    var started = false
-    var finished = false
+    // var started = false
+    // var finished = false
 
     func testLifecycle() {
 
-        performServerTest(delegate, lifecycleDelegate: self, asyncTasks: { expectation in
+        performServerTest(delegate, asyncTasks: { expectation in
             self.performRequest("get", path: "/any", callback: { response in
                 XCTAssertEqual(response!.statusCode, HTTPStatusCode.OK, "Status code wasn't .Ok was \(response!.statusCode)")
-                XCTAssertTrue(self.started, "server delegate serverStarted:on: wasn't called")
+                // XCTAssertTrue(self.started, "server delegate serverStarted:on: wasn't called")
                 expectation.fulfill()
             })
         })
 
-        sleep(1)
-        XCTAssertTrue(self.finished, "server delegate serverStopped:on: wasn't called")
+        // sleep(1)
+        // XCTAssertTrue(self.finished, "server delegate serverStopped:on: wasn't called")
     }
 
     private class TestServerDelegate : ServerDelegate {
 
         func handle(request: ServerRequest, response: ServerResponse) {
-                handleGet(request: request, response: response)
-
-        }
-
-        func handleGet(request: ServerRequest, response: ServerResponse) {
             let payload = "hello"
             let payloadData = payload.data(using: .utf8)!
             do {
@@ -73,18 +68,5 @@ class LifecycleDelegateTests: XCTestCase {
                 print("Error writing response.")
             }
         }
-    }
-}
-
-extension LifecycleDelegateTests: ServerLifecycleDelegate {
-
-    func serverStarted(_ server: Server, on port: Int) {
-        print("[Lifecycle started]")
-        self.started = true
-    }
-
-    func serverStopped(_ server: Server, on port: Int) {
-        print("[Lifecycle stopped]")
-        self.finished = true
     }
 }

@@ -16,17 +16,9 @@
 
 import Socket
 
-public protocol Server {
+public protocol ServerLifecycleProtocol {
 
-    associatedtype ServerType
-
-    weak var delegate: ServerDelegate? { get set }
-
-    var port: Int? { get }
-
-    func listen(port: Int, errorHandler: ((Swift.Error) -> Void)?)
-
-    static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> ServerType
-
-    func stop()
+    func started(callback: @escaping () -> Void) -> Self
+    func stopped(callback: @escaping () -> Void) -> Self
+    func failed(callback: @escaping (Swift.Error) -> Void) -> Self
 }

@@ -15,18 +15,8 @@
  */
 
 import Socket
+import LoggerAPI
 
-public protocol Server {
+public class ServerLifecycleListener {
 
-    associatedtype ServerType
-
-    weak var delegate: ServerDelegate? { get set }
-
-    var port: Int? { get }
-
-    func listen(port: Int, errorHandler: ((Swift.Error) -> Void)?)
-
-    static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> ServerType
-
-    func stop()
 }

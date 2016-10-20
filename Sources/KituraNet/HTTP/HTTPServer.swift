@@ -25,10 +25,10 @@ import SSLService
 /// An HTTP server that listens for connections on a socket.
 public class HTTPServer: Server {
 
+    public typealias ServerType = HTTPServer
+
     /// HTTP `ServerDelegate`.
     public weak var delegate: ServerDelegate?
-
-    public weak var lifecycleDelegate: ServerLifecycleDelegate?
 
     /// Port number for listening for new connections.
     public private(set) var port: Int?
@@ -42,13 +42,13 @@ public class HTTPServer: Server {
     /// Maximum number of pending connections
     private let maxPendingConnections = 100
 
-
     /// Incoming socket handler
     private let socketManager = IncomingSocketManager()
 
     /// SSL cert configs for handling client requests
     public var sslConfig: SSLService.Configuration?
 
+    private let lifecycleListener = ServerLifecycleListener()
 
 
     /// Listen for connections on a socket.
@@ -79,7 +79,7 @@ public class HTTPServer: Server {
                 Log.error("Error creating socket: \(error)")
             }
 
-            self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
+            // self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
         }
 
         guard let socket = self.listenSocket else {
@@ -97,7 +97,7 @@ public class HTTPServer: Server {
                     Log.error("Error listening on socket: \(error)")
                 }
 
-                self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
+                // self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
             }
         })
 
@@ -113,10 +113,9 @@ public class HTTPServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `HTTPServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, lifecycleDelegate: ServerLifecycleDelegate? = nil, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
+    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> HTTPServer {
         let server = HTTP.createServer()
         server.delegate = delegate
-        server.lifecycleDelegate = lifecycleDelegate
         server.listen(port: port, errorHandler: errorHandler)
         return server
     }
@@ -129,8 +128,8 @@ public class HTTPServer: Server {
         do {
             try socket.listen(on: port, maxBacklogSize: maxPendingConnections)
 
-            self.lifecycleDelegate?.serverStarted(self, on: port)
-            
+            // self.lifecycleDelegate?.serverStarted(self, on: port)
+
             Log.info("Listening on port \(port)")
 
             // TODO: Change server exit to not rely on error being thrown
@@ -142,7 +141,7 @@ public class HTTPServer: Server {
             } while true
         } catch let error as Socket.Error {
             if stopped && error.errorCode == Int32(Socket.SOCKET_ERR_ACCEPT_FAILED) {
-                self.lifecycleDelegate?.serverStopped(self, on: port)
+                // self.lifecycleDelegate?.serverStopped(self, on: port)
 
                 Log.info("Server has stopped listening")
             }

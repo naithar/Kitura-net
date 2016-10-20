@@ -23,10 +23,10 @@ import LoggerAPI
 /// protocol.
 public class FastCGIServer: Server {
 
+    public typealias ServerType = FastCGIServer
+
     /// The `ServerDelegate` to handle incoming requests.
     public weak var delegate: ServerDelegate?
-
-    public weak var lifecycleDelegate: ServerLifecycleDelegate?
 
     /// Port number for listening for new connections
     public private(set) var port: Int?
@@ -64,7 +64,7 @@ public class FastCGIServer: Server {
                 Log.error("Error creating socket: \(error)")
             }
 
-            self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
+            // self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
         }
 
         guard let socket = self.listenSocket else {
@@ -82,7 +82,7 @@ public class FastCGIServer: Server {
                     Log.error("Error listening on socket: \(error)")
                 }
 
-                self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
+                // self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
             }
         })
 
@@ -97,11 +97,10 @@ public class FastCGIServer: Server {
     /// - Parameter errorHandler: optional callback for error handling
     ///
     /// - Returns: a new `FastCGIServer` instance
-    public static func listen(port: Int, delegate: ServerDelegate, lifecycleDelegate: ServerLifecycleDelegate? = nil, errorHandler: ((Swift.Error) -> Void)? = nil) -> Server {
+    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)? = nil) -> FastCGIServer {
 
         let server = FastCGI.createServer()
         server.delegate = delegate
-        server.lifecycleDelegate = lifecycleDelegate
         server.listen(port: port, errorHandler: errorHandler)
         return server
 
@@ -115,8 +114,8 @@ public class FastCGIServer: Server {
         do {
             try socket.listen(on: port, maxBacklogSize: maxPendingConnections)
 
-            self.lifecycleDelegate?.serverStarted(self, on: port)
-            
+            // self.lifecycleDelegate?.serverStarted(self, on: port)
+
             Log.info("Listening on port \(port) (FastCGI)")
 
             // TODO: Change server exit to not rely on error being thrown
@@ -128,7 +127,7 @@ public class FastCGIServer: Server {
             } while true
         } catch let error as Socket.Error {
             if stopped && error.errorCode == Int32(Socket.SOCKET_ERR_ACCEPT_FAILED) {
-                self.lifecycleDelegate?.serverStopped(self, on: port)
+                // self.lifecycleDelegate?.serverStopped(self, on: port)
 
                 Log.info("FastCGI Server has stopped listening")
             }
