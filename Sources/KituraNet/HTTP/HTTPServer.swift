@@ -50,7 +50,6 @@ public class HTTPServer: Server {
 
     fileprivate let lifecycleListener = ServerLifecycleListener()
 
-
     /// Listen for connections on a socket.
     ///
     /// Listens for connections on a socket
@@ -183,6 +182,41 @@ public class HTTPServer: Server {
     public func failed(callback: @escaping (Swift.Error) -> Void) -> Self {
         self.lifecycleListener.addFailCallback(callback)
         return self
+    }
+}
+
+extension HTTPServer {
+
+    /// Listen for connections on a socket.
+    ///
+    /// Listens for connections on a socket
+    ///
+    /// - Parameter port: port number for new connections (eg. 8090)
+    /// - Parameter errorHandler: optional callback for error handling
+    @available(*, deprecated, message:"Use listen(port: ) instead. For error handling use .failed { }")
+    public func listen(port: Int, errorHandler: ((Swift.Error) -> Void)?) {
+        if let errorHandler = errorHandler {
+            self.failed(callback: errorHandler)
+        }
+        self.listen(port: port)
+    }
+
+    /// Static method to create a new HTTPServer and have it listen for connections.
+    ///
+    /// - Parameter port: port number for accepting new connections
+    /// - Parameter delegate: the delegate handler for HTTP connections
+    /// - Parameter errorHandler: optional callback for error handling
+    ///
+    /// - Returns: a new `HTTPServer` instance
+    @available(*, deprecated, message:"Use listen(port: delegate: ) instead. For error handling use .failed { }")
+    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> HTTPServer {
+        let server = HTTP.createServer()
+        server.delegate = delegate
+        if let errorHandler = errorHandler {
+            server.failed(callback: errorHandler)
+        }
+        server.listen(port: port)
+        return server
     }
 
     /// Wait for all of the listeners to stop.

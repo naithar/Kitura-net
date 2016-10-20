@@ -208,3 +208,38 @@ public class FastCGIServer: Server {
         return self
     }
 }
+
+extension FastCGIServer {
+
+    /// Listens for connections on a socket
+    ///
+    /// - Parameter port: port number for new connections (ex. 9000)
+    /// - Parameter errorHandler: optional callback for error handling
+    ///
+    @available(*, deprecated, message:"Use listen(port: ) instead. For error handling use .failed { }")
+    public func listen(port: Int, errorHandler: ((Swift.Error) -> Void)?) {
+        if let errorHandler = errorHandler {
+            self.failed(callback: errorHandler)
+        }
+        self.listen(port: port)
+    }
+
+    /// Static method to create a new `FastCGIServer` and have it listen for conenctions
+    ///
+    /// - Parameter port: port number for accepting new connections
+    /// - Parameter delegate: the delegate handler for FastCGI/HTTP connections
+    /// - Parameter errorHandler: optional callback for error handling
+    ///
+    /// - Returns: a new `FastCGIServer` instance
+    @available(*, deprecated, message:"Use listen(port: delegate: ) instead. For error handling use .failed { }")
+    public static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> FastCGIServer {
+        let server = FastCGI.createServer()
+        server.delegate = delegate
+        if let errorHandler = errorHandler {
+            server.failed(callback: errorHandler)
+        }
+        server.listen(port: port)
+        return server
+
+    }
+}
