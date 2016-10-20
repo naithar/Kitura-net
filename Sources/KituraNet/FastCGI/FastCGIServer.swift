@@ -198,10 +198,6 @@ public class FastCGIServer: Server {
 
     }
 
-}
-
-extension FastCGIServer: ServerLifecycleProtocol {
-
     @discardableResult
     public func started(callback: @escaping () -> Void) -> Self {
         self.lifecycleListener.addStartCallback(callback)

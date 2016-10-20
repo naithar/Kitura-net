@@ -170,18 +170,6 @@ public class HTTPServer: Server {
         }
     }
 
-    /// Wait for all of the listeners to stop.
-    ///
-    /// - todo: Note that this calls the ListenerGroup object, and is left in for
-    /// backwards compability reasons. Can be safely removed once IBM-Swift/Kitura/Kitura.swift
-    /// is patched to directly talk to ListenerGroup.
-    public static func waitForListeners() {
-        ListenerGroup.waitForListeners()
-    }
-}
-
-extension HTTPServer: ServerLifecycleProtocol {
-
     @discardableResult
     public func started(callback: @escaping () -> Void) -> Self {
         self.lifecycleListener.addStartCallback(callback)
@@ -198,5 +186,15 @@ extension HTTPServer: ServerLifecycleProtocol {
     public func failed(callback: @escaping (Swift.Error) -> Void) -> Self {
         self.lifecycleListener.addFailCallback(callback)
         return self
+    }
+
+    /// Wait for all of the listeners to stop.
+    ///
+    /// - todo: Note that this calls the ListenerGroup object, and is left in for
+    /// backwards compability reasons. Can be safely removed once IBM-Swift/Kitura/Kitura.swift
+    /// is patched to directly talk to ListenerGroup.
+    @available(*, deprecated, message:"Will be removed in future versions. Use ListenerGroup.waitForListeners() directly.")
+    public static func waitForListeners() {
+        ListenerGroup.waitForListeners()
     }
 }

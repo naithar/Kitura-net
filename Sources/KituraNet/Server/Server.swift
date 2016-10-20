@@ -29,4 +29,13 @@ public protocol Server {
     static func listen(port: Int, delegate: ServerDelegate, errorHandler: ((Swift.Error) -> Void)?) -> ServerType
 
     func stop()
+
+    @discardableResult
+    func started(callback: @escaping () -> Void) -> Self
+
+    @discardableResult
+    func stopped(callback: @escaping () -> Void) -> Self
+
+    @discardableResult
+    func failed(callback: @escaping (Swift.Error) -> Void) -> Self
 }
