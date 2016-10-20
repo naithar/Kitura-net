@@ -37,16 +37,20 @@ class LifecycleListenerTests: XCTestCase {
     }
 
     func testLifecycle() {
+        var started = false
         let startExpectation = self.expectation(description: "start")
 
         let server = HTTP.createServer()
         server.started {
             startExpectation.fulfill()
+        }.started {
+            started = true
         }
         server.listen(port: 8090)
 
         self.waitForExpectations(timeout: 5) { error in
             XCTAssertNil(error)
+            XCTAssertTrue(started)
             let stopExpectation = self.expectation(description: "stop")
 
             server.stopped {
