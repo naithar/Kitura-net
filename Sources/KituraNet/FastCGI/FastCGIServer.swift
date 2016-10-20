@@ -47,6 +47,8 @@ public class FastCGIServer: Server {
     /// TCP socket used for listening for new connections
     private var listenSocket: Socket?
 
+    private let lifecycleListener = ServerLifecycleListener()
+
     /// Listens for connections on a socket
     ///
     /// - Parameter port: port number for new connections (ex. 9000)
@@ -63,8 +65,6 @@ public class FastCGIServer: Server {
             } else {
                 Log.error("Error creating socket: \(error)")
             }
-
-            // self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
         }
 
         guard let socket = self.listenSocket else {
@@ -82,7 +82,7 @@ public class FastCGIServer: Server {
                     Log.error("Error listening on socket: \(error)")
                 }
 
-                // self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
+                self.lifecycleListener.performFailCallbacks(with: error)
             }
         })
 
@@ -114,7 +114,7 @@ public class FastCGIServer: Server {
         do {
             try socket.listen(on: port, maxBacklogSize: maxPendingConnections)
 
-            // self.lifecycleDelegate?.serverStarted(self, on: port)
+            self.lifecycleListener.performStartCallbacks()
 
             Log.info("Listening on port \(port) (FastCGI)")
 
@@ -127,7 +127,8 @@ public class FastCGIServer: Server {
             } while true
         } catch let error as Socket.Error {
             if stopped && error.errorCode == Int32(Socket.SOCKET_ERR_ACCEPT_FAILED) {
-                // self.lifecycleDelegate?.serverStopped(self, on: port)
+
+                self.lifecycleListener.performStopCallbacks()
 
                 Log.info("FastCGI Server has stopped listening")
             }

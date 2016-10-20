@@ -17,6 +17,29 @@
 import Socket
 import LoggerAPI
 
-public class ServerLifecycleListener {
+class ServerLifecycleListener {
 
+    func performStartCallbacks() {
+
+    }
+
+    func performStopCallbacks() {
+
+    }
+
+    func performFailCallbacks(with error: Swift.Error) {
+
+    }
+
+    func addStartCallback(callback: @escaping () -> Void) {
+
+    }
+
+    func addStopCallback(callback: @escaping () -> Void) {
+
+    }
+
+    func addFailCallback(callback: @escaping (Swift.Error) -> Void) {
+
+    }
 }

@@ -78,8 +78,6 @@ public class HTTPServer: Server {
             } else {
                 Log.error("Error creating socket: \(error)")
             }
-
-            // self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
         }
 
         guard let socket = self.listenSocket else {
@@ -97,7 +95,7 @@ public class HTTPServer: Server {
                     Log.error("Error listening on socket: \(error)")
                 }
 
-                // self.lifecycleDelegate?.serverFailed(self, on: port, with: error)
+                self.lifecycleListener.performFailCallbacks(with: error)
             }
         })
 
@@ -128,7 +126,7 @@ public class HTTPServer: Server {
         do {
             try socket.listen(on: port, maxBacklogSize: maxPendingConnections)
 
-            // self.lifecycleDelegate?.serverStarted(self, on: port)
+            self.lifecycleListener.performStartCallbacks()
 
             Log.info("Listening on port \(port)")
 
@@ -141,7 +139,8 @@ public class HTTPServer: Server {
             } while true
         } catch let error as Socket.Error {
             if stopped && error.errorCode == Int32(Socket.SOCKET_ERR_ACCEPT_FAILED) {
-                // self.lifecycleDelegate?.serverStopped(self, on: port)
+
+                self.lifecycleListener.performStopCallbacks()
 
                 Log.info("Server has stopped listening")
             }
